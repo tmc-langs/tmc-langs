@@ -1,6 +1,5 @@
 package fi.helsinki.cs.tmc.langs.ant;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -95,7 +94,7 @@ public class AntPlugin extends AbstractLanguagePlugin {
      * @param path The file path of the exercise directory.
      * @return true if build success, else return false.
      */
-    @VisibleForTesting
+
     protected CompileResult buildAntProject(Path path) {
         File buildFile = new File(path.toString() + File.separatorChar + "build.xml");
         Project buildProject = new Project();
@@ -130,6 +129,7 @@ public class AntPlugin extends AbstractLanguagePlugin {
 
         } catch (BuildException e) {
             try {
+                System.out.println("BUILD FAILED");
                 buildProject.fireBuildFinished(e);
                 return new CompileResult(1,
                         Files.readAllBytes(buildLog.toPath()),

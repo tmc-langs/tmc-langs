@@ -1,6 +1,7 @@
 package fi.helsinki.cs.tmc.langs.ant;
 
 import com.google.common.collect.ImmutableList;
+import fi.helsinki.cs.tmc.langs.CompileResult;
 import fi.helsinki.cs.tmc.langs.ExerciseDesc;
 import fi.helsinki.cs.tmc.langs.RunResult;
 import fi.helsinki.cs.tmc.langs.TestDesc;
@@ -120,7 +121,24 @@ public class AntPluginTest {
         RunResult runResult = antPlugin.runTests(TestUtils.getPath(getClass(), "ant_arith_funcs"));
         File actual = new File("target/test-classes/ant_arith_funcs/build_log.txt");
         assertFileLines(expected, actual);
+    }
 
+    @Test
+    public void testCompileResult() throws IOException {
+        TestUtils.removeDirRecursively(getClass(), "ant_arith_funcs/build");
+        CompileResult compileResult = antPlugin.buildAntProject(TestUtils.getPath(getClass(), "ant_arith_funcs"));
+        assertEquals("Compile should exit with status 0", 0, compileResult.getStatusCode());
+        byte[] logs = compileResult.getStdout();
+        assertNotNull(logs);
+    }
+
+    @Test
+    public void testCompilerError() throws IOException {
+        TestUtils.removeDirRecursively(getClass(), "failing_trivial/build");
+        CompileResult compileResult = antPlugin.buildAntProject(TestUtils.getPath(getClass(), "failing_trivial"));
+        assertEquals("Erroneous compile should exit with status 1", 1, compileResult.getStatusCode());
+        byte[] logs = compileResult.getStderr();
+        assertNotNull(logs);
     }
 
     private void assertFileLines(File expected, File actual) throws IOException {
@@ -129,4 +147,5 @@ public class AntPluginTest {
         List<String> actualLines = FileUtils.readLines(actual);
         assertEquals("Build log should match by length", expectedLines.size(), actualLines.size());
     }
+
 }
