@@ -122,24 +122,25 @@ public class AntPlugin extends AbstractLanguagePlugin {
             buildProject.addReference("ant.projectHelper", helper);
             helper.parse(buildProject, buildFile);
             buildProject.executeTarget("compile-test");
-            buildProject.fireBuildFinished(null);
 
-            return new CompileResult(0,
+            return createCompileResult(0, buildProject, null, buildLog, errorLog);
+
+        } catch (BuildException e) {        
+            return createCompileResult(1, buildProject, e, buildLog, errorLog);   
+        } catch (IOException e) {
+            throw Throwables.propagate(e);      
+        }
+    }
+
+    private CompileResult createCompileResult(int isInError, Project buildProject, BuildException e,
+            File buildLog, File errorLog) {
+        try {
+            buildProject.fireBuildFinished(e);
+            return new CompileResult(isInError,
                     Files.readAllBytes(buildLog.toPath()),
                     Files.readAllBytes(errorLog.toPath()));
-
-        } catch (BuildException e) {
-            try {
-                buildProject.fireBuildFinished(e);
-                return new CompileResult(1,
-                        Files.readAllBytes(buildLog.toPath()),
-                        Files.readAllBytes(errorLog.toPath()));
-            } catch (IOException ex) {
-                throw Throwables.propagate(e);
-            }
-
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
+        } catch (IOException ex) {
+            throw Throwables.propagate(ex);
         }
     }
 
