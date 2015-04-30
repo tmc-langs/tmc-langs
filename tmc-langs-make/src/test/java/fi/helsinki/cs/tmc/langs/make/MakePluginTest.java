@@ -23,7 +23,7 @@ public class MakePluginTest {
     
     public MakePluginTest() {
         makePlugin = new MakePlugin();
-        classDir = new File("src/test/resources/makefile").toPath();
+        classDir = new File("src/test/resources/makefile").toPath().toAbsolutePath();
     }
 
     @Test
@@ -53,7 +53,7 @@ public class MakePluginTest {
     
     @Test
     public void testScanExerciseReturnsNullWhenWrongProjectType() {
-        assertNull(makePlugin.scanExercise(new File("src/test/resources/non-make-project").toPath(), "Dummy"));
+        assertNull(makePlugin.scanExercise(new File("src/test/resources/non-make-project").toPath().toAbsolutePath(), "Dummy"));
     }
     
 }
