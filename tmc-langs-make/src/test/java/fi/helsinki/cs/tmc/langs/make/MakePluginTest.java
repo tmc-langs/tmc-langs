@@ -1,38 +1,59 @@
 package fi.helsinki.cs.tmc.langs.make;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import fi.helsinki.cs.tmc.langs.ExerciseDesc;
+import fi.helsinki.cs.tmc.langs.RunResult;
+import fi.helsinki.cs.tmc.langs.TestDesc;
+import fi.helsinki.cs.tmc.langs.TestResult;
+import fi.helsinki.cs.tmc.langs.utils.TestUtils;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit test for simple App.
  */
-public class MakePluginTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public MakePluginTest( String testName )
-    {
-        super( testName );
+public class MakePluginTest {
+
+   
+    private MakePlugin makePlugin;
+    private Path classDir;
+    
+    public MakePluginTest() {
+        makePlugin = new MakePlugin();
+        classDir = Paths.get("./src", "test", "resources", "makefile");
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( MakePluginTest.class );
+    @Test
+    public void testGetLanguageName() {
+        assertEquals("C/C++/Fortran", makePlugin.getLanguageName());
     }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    
+    @Test
+    public void testScanExerciseReturnExerciseDesc() {
+        String name = "Make Test";
+        ExerciseDesc description = makePlugin.scanExercise(classDir, name);
+        assertEquals(name, description.name);
+        assertEquals(1, description.tests.size());
     }
+    
+    @Test
+    public void testScanExerciseReturnsCorrectTests() {
+        String name = "Make Test";
+        ExerciseDesc description = makePlugin.scanExercise(classDir, name);
+        assertEquals(1, description.tests.size());
+        
+        TestDesc test = description.tests.get(0);
+        assertEquals("test_source test_sum", test.name);
+        assertEquals("1", test.points.get(0));
+        assertEquals("2", test.points.get(1));
+    }
+    
+    @Test
+    public void testScanExerciseReturnsNullWhenWrongProjectType() {
+        assertNull(makePlugin.scanExercise(Paths.get("./src", "test", "resources", "non-make-project"), "Dummy"));
+    }
+    
 }
