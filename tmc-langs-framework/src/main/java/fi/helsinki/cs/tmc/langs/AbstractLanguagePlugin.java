@@ -25,7 +25,6 @@ public abstract class AbstractLanguagePlugin implements LanguagePlugin {
      * will need some language specific configuration
      */
     private ExerciseBuilder exerciseBuilder = new ExerciseBuilder();
-
     private static final Logger log = Logger.getLogger(AbstractLanguagePlugin.class.getName());
 
     @Override
@@ -136,4 +135,30 @@ public abstract class AbstractLanguagePlugin implements LanguagePlugin {
         }
     }
 
+    /**
+     * Start a process using ProcessBuilder.
+     *
+     * @param args Arguments for starting the process.
+     * @param path Path of the project
+     * @return Possible output of the process.
+     */
+    protected List<String> startProcess(List<String> args, Path path) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(args);
+            pb.directory(path.toFile());
+            Process process = pb.start();
+            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            List<String> results = new ArrayList<>();
+
+            while ((line = br.readLine()) != null && !line.equals("")) {
+                results.add(line);
+            }
+
+            return results;
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
 }

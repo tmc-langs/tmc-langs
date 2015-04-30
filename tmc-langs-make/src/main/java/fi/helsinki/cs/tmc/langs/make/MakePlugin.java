@@ -53,30 +53,5 @@ public class MakePlugin extends AbstractLanguagePlugin {
         return Arrays.asList("make", "test", "-s");
     }
     
-    /**
-     * Start a process using ProcessBuilder.
-     *
-     * @param args Arguments for starting the process.
-     * @param path Path of the project
-     * @return Possible output of the process.
-     */
-    private List<String> startProcess(List<String> args, Path path) {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(args);
-            pb.directory(path.toFile());
-            Process process =  pb.start();
-            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            String line;
-            List<String> results = new ArrayList<>();
-
-            while ((line = br.readLine()) != null && !line.equals("")) {
-                results.add(line);
-            }
-
-            return results;
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
-    }
+    
 }
